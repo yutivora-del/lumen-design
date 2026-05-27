@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/*
+  @theme defines Tailwind utilities and sets CSS custom properties on :root.
+  Short aliases generate the utility names the user writes in JSX:
+  text-fg, bg-bg, bg-surface, text-muted, text-faint, border-ink,
+  border-soft, text-error, font-sans, font-mono, font-display,
+  rounded-sm/md/lg, p-xs/sm/md/lg/xl, etc.
+*/
+@theme {
+  /* Colors — short names map to Tailwind utility suffixes */
+  --color-fg: #1A1814;
+  --color-bg: #FAFAF7;
+  --color-surface: #FFFFFF;
+  --color-muted: #5F5C55;
+  --color-faint: #A8A49C;
+  --color-ink: #1A1814;
+  --color-soft: #E5E1D6;
+  --color-error: #8B2E1F;
+
+  /* Fonts — resolved from CSS vars set by next/font on <html> */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-display: var(--font-inter), system-ui, sans-serif;
+
+  /* Spacing */
+  --spacing-unit: 4px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
+
+  /* Radius */
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+}
+
+/*
+  Canonical Lumen token names for use in authored CSS (var(--color-text),
+  var(--color-border), etc.). These alias the @theme vars above.
+*/
+:root {
+  --color-text: var(--color-fg);
+  --color-text-muted: var(--color-muted);
+  --color-text-faint: var(--color-faint);
+  --color-border: var(--color-ink);
+  --color-border-soft: var(--color-soft);
+
+  --space-unit: var(--spacing-unit);
+  --space-xs: var(--spacing-xs);
+  --space-sm: var(--spacing-sm);
+  --space-md: var(--spacing-md);
+  --space-lg: var(--spacing-lg);
+  --space-xl: var(--spacing-xl);
+
+  /* Type tokens — not in @theme to avoid incorrect utility generation */
+  --text-weight-regular: 420;
+  --text-weight-bold: 540;
+  --text-size-step: 1.2;
+  --text-size-base: 16px;
+  --text-line-base: 1.6;
+  --text-tracking-headline: -0.025em;
+  --text-tracking-eyebrow: 0.1em;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--text-size-base);
+  line-height: var(--text-line-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-weight: var(--text-weight-regular);
+}

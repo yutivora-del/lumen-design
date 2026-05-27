@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@15 . --typescript --tailwind --app --src-dir --no-eslint --import-alias \"@/*\" --yes)",
+      "Read(//private/tmp/**)",
+      "Bash(npx create-next-app@15 lumen-tmp --typescript --tailwind --app --src-dir --no-eslint --import-alias \"@/*\" --yes)",
+      "Bash(rsync -a --exclude='.git' /tmp/lumen-tmp/ /Users/yutivora/lumen-design/)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s \"http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__de5dd74d._.css\")",
+      "Bash(rm -rf /tmp/lumen-tmp)"
+    ]
+  }
+}
