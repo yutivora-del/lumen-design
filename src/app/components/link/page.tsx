@@ -161,7 +161,9 @@ export default function LinkPage() {
               </a>
             ))}
             <a
-              href="https://github.com"
+              href="https://github.com/yutivora-del/lumen-design"
+              target="_blank"
+              rel="noopener"
               style={{ display: 'flex', alignItems: 'center', color: 'var(--color-text-muted)' }}
               aria-label="GitHub"
             >
