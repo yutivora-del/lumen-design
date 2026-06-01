@@ -83,3 +83,35 @@ body {
   font-family: var(--font-sans);
   font-weight: var(--text-weight-regular);
 }
+
+/* ─── Marquee ─────────────────────────────────────────────────────────────── */
+@keyframes lumen-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.lumen-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: lumen-marquee 30s linear infinite;
+}
+
+.lumen-marquee-wrap:hover .lumen-marquee-track {
+  animation-play-state: paused;
+}
+
+/* ─── Components grid ─────────────────────────────────────────────────────── */
+.lumen-components-grid { grid-template-columns: repeat(3, 1fr); }
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .lumen-components-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .lumen-hero-h1 { font-size: 30px; }
+  .lumen-cards-grid { grid-template-columns: 1fr; }
+  .lumen-generator { grid-template-columns: 1fr; }
+  .lumen-token-groups { grid-template-columns: 1fr; }
+  .lumen-components-grid { grid-template-columns: 1fr; }
+}

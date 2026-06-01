@@ -11,7 +11,27 @@
       "Bash(pkill -f \"next dev\")",
       "Bash(curl -s http://localhost:3000/)",
       "Bash(curl -s \"http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__de5dd74d._.css\")",
-      "Bash(rm -rf /tmp/lumen-tmp)"
+      "Bash(rm -rf /tmp/lumen-tmp)",
+      "Bash(git -C /Users/yutivora/lumen-design status)",
+      "Bash(git -C /Users/yutivora/lumen-design log --oneline -5)",
+      "Bash(git -C /Users/yutivora/lumen-design remote -v)",
+      "Bash(git -C /Users/yutivora/lumen-design diff src/app/globals.css)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/components)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/components/__TRACKED_VAR__)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/components)",
+      "Bash(echo \"index: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/components\\)\")",
+      "Bash(curl -s http://localhost:3000/components/slider)",
+      "Bash(curl -s http://localhost:3000/components/badge)",
+      "Bash(curl -s http://localhost:3000/components)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/__TRACKED_VAR__)",
+      "Bash(curl -s http://localhost:3000/components/dialog)",
+      "Bash(curl -s http://localhost:3000/components/toast)",
+      "Bash(curl -s http://localhost:3000/components/menu)",
+      "Bash(xargs sed -i '' \"s/\\\\['Tokens', 'Components', 'Notes'\\\\]/['Tokens', 'Components', 'About']/g\")"
     ]
   }
 }

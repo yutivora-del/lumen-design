@@ -5,6 +5,10 @@ import type { CSSProperties, ReactNode } from 'react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Alert } from '@/components/alert';
+import { Card } from '@/components/card';
+import { Tabs } from '@/components/tabs';
+import { Badge } from '@/components/badge';
+import { ComponentCard } from '@/components/component-card';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -112,6 +116,14 @@ const controlBase: CSSProperties = {
   width: '100%',
 };
 
+const prose: CSSProperties = {
+  fontSize: '15px',
+  fontWeight: 420,
+  color: 'var(--color-text)',
+  lineHeight: 1.7,
+  margin: '0 0 1em',
+};
+
 // ─── Small UI pieces ──────────────────────────────────────────────────────────
 
 function ControlField({ label, children }: { label: string; children: ReactNode }) {
@@ -147,14 +159,64 @@ function GitHubIcon() {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ─── Page data ────────────────────────────────────────────────────────────────
 
-const exits = [
-  { label: 'Components', desc: 'Twenty, each one earns its place.', href: '/components' },
-  { label: 'About', desc: 'Lumen and Yuti.', href: '/about' },
-  { label: 'Pricing', desc: 'Free. Share it if you like it.', href: '/pricing' },
-  { label: 'GitHub', desc: 'Source on GitHub.', href: 'https://github.com' },
+const componentCards: {
+  slug: string;
+  name: string;
+  category: string;
+  description: string;
+  preview: ReactNode;
+}[] = [
+  {
+    slug: 'card',
+    name: 'Card',
+    category: 'Containers',
+    description: 'Surface, with hierarchy.',
+    preview: (
+      <div style={{ width: '170px' }}>
+        <Card>
+          <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: 540, color: 'var(--color-text)' }}>Dashboard</p>
+          <p style={{ margin: 0, fontSize: '11px', color: 'var(--color-text-muted)' }}>Four active projects.</p>
+        </Card>
+      </div>
+    ),
+  },
+  {
+    slug: 'tabs',
+    name: 'Tabs',
+    category: 'Navigation',
+    description: 'Switch views, without the noise.',
+    preview: (
+      <div style={{ width: '180px' }}>
+        <Tabs
+          tabs={[
+            { label: 'Overview', content: <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>At a glance.</span> },
+            { label: 'Details', content: <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>The particulars.</span> },
+          ]}
+        />
+      </div>
+    ),
+  },
+  {
+    slug: 'badge',
+    name: 'Badge',
+    category: 'Feedback',
+    description: 'Status, in a few characters.',
+    preview: <Badge>New</Badge>,
+  },
 ];
+
+const marqueeItems = [
+  'Tokens, not utilities',
+  "Copy, don't install",
+  'Figma → code',
+  'Open source',
+  'Quiet by default',
+  'Wear every hat',
+];
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('button');
@@ -162,6 +224,7 @@ export default function Home() {
   const [inputProps, setInputProps] = useState<InputState>(DEFAULTS.input);
   const [alertProps, setAlertProps] = useState<AlertState>(DEFAULTS.alert);
   const [copied, setCopied] = useState(false);
+  const [linkHovered, setLinkHovered] = useState(false);
 
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
@@ -184,24 +247,28 @@ export default function Home() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: '720px',
-        margin: '0 auto',
-        padding: '0 24px',
-      }}
-    >
-      {/* ─── Masthead ─────────────────────────────────────────────────── */}
-      <header style={{ paddingTop: '20px' }}>
+    <>
+      {/* ─── Header ───────────────────────────────────────────────────────── */}
+      <header
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          backgroundColor: 'var(--color-bg)',
+          borderBottom: '0.5px solid var(--color-border)',
+        }}
+      >
         <div
           style={{
+            maxWidth: '1080px',
+            margin: '0 auto',
+            padding: '0 32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingBottom: '20px',
+            height: '52px',
           }}
         >
-          {/* Wordmark + version */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
             <span
               style={{
@@ -223,16 +290,8 @@ export default function Home() {
               v0.2
             </span>
           </div>
-
-          {/* Nav */}
-          <nav
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '24px',
-            }}
-          >
-            {['Components', 'About', 'Pricing'].map((item) => (
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            {['Tokens', 'Components', 'About'].map((item) => (
               <a
                 key={item}
                 href={`/${item.toLowerCase()}`}
@@ -248,413 +307,527 @@ export default function Home() {
             ))}
             <a
               href="https://github.com"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                color: 'var(--color-text-muted)',
-              }}
+              style={{ display: 'flex', alignItems: 'center', color: 'var(--color-text-muted)' }}
               aria-label="GitHub"
             >
               <GitHubIcon />
             </a>
           </nav>
         </div>
-        <hr style={hairline} />
       </header>
 
-      {/* ─── Intro ────────────────────────────────────────────────────── */}
-      <section style={{ padding: '80px 0' }}>
-        <h1
-          style={{
-            fontSize: '40px',
-            fontWeight: 540,
-            letterSpacing: '-0.025em',
-            lineHeight: 1.1,
-            color: 'var(--color-text)',
-            margin: '0 0 20px',
-          }}
-        >
-          An open-source design system for designers.
-        </h1>
-        <p
-          style={{
-            fontSize: '16px',
-            fontWeight: 420,
-            color: 'var(--color-text-muted)',
-            lineHeight: 1.6,
-            margin: 0,
-            maxWidth: '480px',
-          }}
-        >
-          Twenty components. One opinionated foundation. Built to help you
-          bridge the gap between design and code.
-        </p>
-      </section>
+      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+      <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>
+        <section style={{ paddingTop: '96px', paddingBottom: '96px' }}>
+          <div style={{ maxWidth: '720px' }}>
+            <p style={{ ...eyebrow, marginBottom: '20px' }}>An open-source design system</p>
+            <h1
+              className="lumen-hero-h1"
+              style={{
+                fontSize: '44px',
+                fontWeight: 540,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.1,
+                color: 'var(--color-text)',
+                margin: '0 0 24px',
+              }}
+            >
+              An open-source design system for designers wearing too many hats.
+            </h1>
+            <p
+              style={{
+                fontSize: '17px',
+                fontWeight: 420,
+                color: 'var(--color-text-muted)',
+                lineHeight: 1.6,
+                margin: '0 0 32px',
+                maxWidth: '560px',
+              }}
+            >
+              Lumen is twenty components, twenty-two tokens, and an opinion about
+              how design and code should agree. Built by a product designer, for
+              product designers who got tired of waiting on handoff.
+            </p>
+            <Button variant="primary" size="md">Explore components</Button>
+          </div>
+        </section>
+      </div>
 
-      {/* ─── Playground ───────────────────────────────────────────────── */}
-      <section>
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: '24px', marginBottom: '20px' }}>
-          {(['button', 'input', 'alert'] as Tab[]).map((tab) => {
-            const active = tab === activeTab;
-            return (
-              <button
-                key={tab}
-                onClick={() => handleTabChange(tab)}
+      {/* ─── Marquee ──────────────────────────────────────────────────────── */}
+      <div
+        className="lumen-marquee-wrap"
+        style={{
+          borderTop: '0.5px solid var(--color-border)',
+          borderBottom: '0.5px solid var(--color-border)',
+          overflow: 'hidden',
+          padding: '12px 0',
+        }}
+      >
+        <div
+          className="lumen-marquee-track"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '13px',
+            color: 'var(--color-text-muted)',
+            fontWeight: 420,
+          }}
+        >
+          {[...marqueeItems, ...marqueeItems].map((item, i) => (
+            <span key={i} style={{ whiteSpace: 'nowrap', padding: '0 20px' }}>
+              {item}
+              <span style={{ marginLeft: '20px', color: 'var(--color-text-faint)' }}>·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── Main content ─────────────────────────────────────────────────── */}
+      <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>
+
+        {/* ─── Playground ───────────────────────────────────────────────── */}
+        <section style={{ paddingTop: '96px' }}>
+          <div
+            style={{
+              border: '0.5px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              padding: '32px',
+            }}
+          >
+            {/* Eyebrow */}
+            <p style={{ ...eyebrow, marginBottom: '16px' }}>Try it</p>
+            {/* Serif intro */}
+            <p
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontStyle: 'italic',
+                fontSize: '20px',
+                fontWeight: 400,
+                color: 'var(--color-text-muted)',
+                lineHeight: 1.5,
+                margin: '0 0 28px',
+              }}
+            >
+              Read the docs later. Touch a button first.
+            </p>
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: '24px', marginBottom: '24px' }}>
+              {(['button', 'input', 'alert'] as Tab[]).map((tab) => {
+                const active = tab === activeTab;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => handleTabChange(tab)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: '14px',
+                      fontWeight: active ? 540 : 420,
+                      color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
+                      textDecoration: active ? 'underline' : 'none',
+                      textUnderlineOffset: '4px',
+                      textDecorationThickness: '0.5px',
+                    }}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+                );
+              })}
+            </div>
+            {/* 2-col: preview + controls */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '3fr 2fr',
+                gap: '32px',
+                alignItems: 'start',
+              }}
+            >
+              {/* Live preview */}
+              <div
                 style={{
+                  backgroundColor: 'var(--color-surface)',
+                  border: '0.5px solid var(--color-border)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '48px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '180px',
+                }}
+              >
+                {activeTab === 'button' && (
+                  <Button
+                    variant={buttonProps.variant}
+                    size={buttonProps.size}
+                    disabled={buttonProps.disabled}
+                  >
+                    {buttonProps.label}
+                  </Button>
+                )}
+                {activeTab === 'input' && (
+                  <div style={{ width: '220px' }}>
+                    <Input
+                      label={inputProps.label}
+                      placeholder={inputProps.placeholder}
+                      size={inputProps.size}
+                      error={inputProps.error}
+                    />
+                  </div>
+                )}
+                {activeTab === 'alert' && (
+                  <div style={{ width: '100%', maxWidth: '320px' }}>
+                    <Alert variant={alertProps.variant} title={alertProps.title}>
+                      {alertProps.body}
+                    </Alert>
+                  </div>
+                )}
+              </div>
+              {/* Controls */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <p style={eyebrow}>Controls</p>
+
+                {activeTab === 'button' && (
+                  <>
+                    <ControlField label="variant">
+                      <select
+                        value={buttonProps.variant}
+                        onChange={(e) =>
+                          setButtonProps((p) => ({
+                            ...p,
+                            variant: e.target.value as ButtonState['variant'],
+                          }))
+                        }
+                        style={controlBase}
+                      >
+                        <option value="primary">primary</option>
+                        <option value="outline">outline</option>
+                        <option value="ghost">ghost</option>
+                      </select>
+                    </ControlField>
+                    <ControlField label="size">
+                      <select
+                        value={buttonProps.size}
+                        onChange={(e) =>
+                          setButtonProps((p) => ({
+                            ...p,
+                            size: e.target.value as ButtonState['size'],
+                          }))
+                        }
+                        style={controlBase}
+                      >
+                        <option value="sm">sm</option>
+                        <option value="md">md</option>
+                        <option value="lg">lg</option>
+                      </select>
+                    </ControlField>
+                    <ControlField label="label">
+                      <input
+                        value={buttonProps.label}
+                        onChange={(e) =>
+                          setButtonProps((p) => ({ ...p, label: e.target.value }))
+                        }
+                        style={controlBase}
+                      />
+                    </ControlField>
+                    <ControlField label="disabled">
+                      <div style={{ paddingBottom: '4px' }}>
+                        <input
+                          type="checkbox"
+                          checked={buttonProps.disabled}
+                          onChange={(e) =>
+                            setButtonProps((p) => ({ ...p, disabled: e.target.checked }))
+                          }
+                        />
+                      </div>
+                    </ControlField>
+                  </>
+                )}
+
+                {activeTab === 'input' && (
+                  <>
+                    <ControlField label="size">
+                      <select
+                        value={inputProps.size}
+                        onChange={(e) =>
+                          setInputProps((p) => ({
+                            ...p,
+                            size: e.target.value as InputState['size'],
+                          }))
+                        }
+                        style={controlBase}
+                      >
+                        <option value="sm">sm</option>
+                        <option value="md">md</option>
+                        <option value="lg">lg</option>
+                      </select>
+                    </ControlField>
+                    <ControlField label="label">
+                      <input
+                        value={inputProps.label}
+                        onChange={(e) =>
+                          setInputProps((p) => ({ ...p, label: e.target.value }))
+                        }
+                        style={controlBase}
+                      />
+                    </ControlField>
+                    <ControlField label="placeholder">
+                      <input
+                        value={inputProps.placeholder}
+                        onChange={(e) =>
+                          setInputProps((p) => ({ ...p, placeholder: e.target.value }))
+                        }
+                        style={controlBase}
+                      />
+                    </ControlField>
+                    <ControlField label="error">
+                      <div style={{ paddingBottom: '4px' }}>
+                        <input
+                          type="checkbox"
+                          checked={inputProps.error}
+                          onChange={(e) =>
+                            setInputProps((p) => ({ ...p, error: e.target.checked }))
+                          }
+                        />
+                      </div>
+                    </ControlField>
+                  </>
+                )}
+
+                {activeTab === 'alert' && (
+                  <>
+                    <ControlField label="variant">
+                      <select
+                        value={alertProps.variant}
+                        onChange={(e) =>
+                          setAlertProps((p) => ({
+                            ...p,
+                            variant: e.target.value as AlertState['variant'],
+                          }))
+                        }
+                        style={controlBase}
+                      >
+                        <option value="info">info</option>
+                        <option value="warning">warning</option>
+                        <option value="error">error</option>
+                      </select>
+                    </ControlField>
+                    <ControlField label="title">
+                      <input
+                        value={alertProps.title}
+                        onChange={(e) =>
+                          setAlertProps((p) => ({ ...p, title: e.target.value }))
+                        }
+                        style={controlBase}
+                      />
+                    </ControlField>
+                    <ControlField label="body">
+                      <input
+                        value={alertProps.body}
+                        onChange={(e) =>
+                          setAlertProps((p) => ({ ...p, body: e.target.value }))
+                        }
+                        style={controlBase}
+                      />
+                    </ControlField>
+                  </>
+                )}
+              </div>
+            </div>
+            {/* Code block */}
+            <div
+              style={{
+                position: 'relative',
+                marginTop: '24px',
+                border: '0.5px solid var(--color-border)',
+              }}
+            >
+              <pre
+                style={{
+                  margin: 0,
+                  padding: '16px 48px 16px 16px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '13px',
+                  color: 'var(--color-text)',
+                  backgroundColor: 'var(--color-bg)',
+                  overflowX: 'auto',
+                  lineHeight: 1.6,
+                }}
+              >
+                <code>{currentCode}</code>
+              </pre>
+              <button
+                onClick={handleCopy}
+                style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '12px',
                   background: 'none',
                   border: 'none',
                   padding: 0,
                   cursor: 'pointer',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  fontWeight: active ? 540 : 420,
-                  color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
-                  textDecoration: active ? 'underline' : 'none',
-                  textUnderlineOffset: '4px',
-                  textDecorationThickness: '0.5px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  fontWeight: 420,
+                  letterSpacing: '0.05em',
+                  color: copied ? 'var(--color-text)' : 'var(--color-text-faint)',
                 }}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {copied ? 'Copied' : 'Copy'}
               </button>
-            );
-          })}
-        </div>
-
-        {/* Preview + controls */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '3fr 2fr',
-            gap: '16px',
-            alignItems: 'start',
-          }}
-        >
-          {/* Live preview */}
-          <div
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              border: '0.5px solid var(--color-border)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '48px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '180px',
-            }}
-          >
-            {activeTab === 'button' && (
-              <Button
-                variant={buttonProps.variant}
-                size={buttonProps.size}
-                disabled={buttonProps.disabled}
-              >
-                {buttonProps.label}
-              </Button>
-            )}
-            {activeTab === 'input' && (
-              <div style={{ width: '220px' }}>
-                <Input
-                  label={inputProps.label}
-                  placeholder={inputProps.placeholder}
-                  size={inputProps.size}
-                  error={inputProps.error}
-                />
-              </div>
-            )}
-            {activeTab === 'alert' && (
-              <div style={{ width: '100%', maxWidth: '320px' }}>
-                <Alert variant={alertProps.variant} title={alertProps.title}>
-                  {alertProps.body}
-                </Alert>
-              </div>
-            )}
+            </div>
           </div>
+        </section>
 
-          {/* Controls panel */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <p style={eyebrow}>Controls</p>
-
-            {activeTab === 'button' && (
-              <>
-                <ControlField label="variant">
-                  <select
-                    value={buttonProps.variant}
-                    onChange={(e) =>
-                      setButtonProps((p) => ({
-                        ...p,
-                        variant: e.target.value as ButtonState['variant'],
-                      }))
-                    }
-                    style={controlBase}
-                  >
-                    <option value="primary">primary</option>
-                    <option value="outline">outline</option>
-                    <option value="ghost">ghost</option>
-                  </select>
-                </ControlField>
-                <ControlField label="size">
-                  <select
-                    value={buttonProps.size}
-                    onChange={(e) =>
-                      setButtonProps((p) => ({
-                        ...p,
-                        size: e.target.value as ButtonState['size'],
-                      }))
-                    }
-                    style={controlBase}
-                  >
-                    <option value="sm">sm</option>
-                    <option value="md">md</option>
-                    <option value="lg">lg</option>
-                  </select>
-                </ControlField>
-                <ControlField label="label">
-                  <input
-                    value={buttonProps.label}
-                    onChange={(e) =>
-                      setButtonProps((p) => ({ ...p, label: e.target.value }))
-                    }
-                    style={controlBase}
-                  />
-                </ControlField>
-                <ControlField label="disabled">
-                  <div style={{ paddingBottom: '4px' }}>
-                    <input
-                      type="checkbox"
-                      checked={buttonProps.disabled}
-                      onChange={(e) =>
-                        setButtonProps((p) => ({ ...p, disabled: e.target.checked }))
-                      }
-                    />
-                  </div>
-                </ControlField>
-              </>
-            )}
-
-            {activeTab === 'input' && (
-              <>
-                <ControlField label="size">
-                  <select
-                    value={inputProps.size}
-                    onChange={(e) =>
-                      setInputProps((p) => ({
-                        ...p,
-                        size: e.target.value as InputState['size'],
-                      }))
-                    }
-                    style={controlBase}
-                  >
-                    <option value="sm">sm</option>
-                    <option value="md">md</option>
-                    <option value="lg">lg</option>
-                  </select>
-                </ControlField>
-                <ControlField label="label">
-                  <input
-                    value={inputProps.label}
-                    onChange={(e) =>
-                      setInputProps((p) => ({ ...p, label: e.target.value }))
-                    }
-                    style={controlBase}
-                  />
-                </ControlField>
-                <ControlField label="placeholder">
-                  <input
-                    value={inputProps.placeholder}
-                    onChange={(e) =>
-                      setInputProps((p) => ({ ...p, placeholder: e.target.value }))
-                    }
-                    style={controlBase}
-                  />
-                </ControlField>
-                <ControlField label="error">
-                  <div style={{ paddingBottom: '4px' }}>
-                    <input
-                      type="checkbox"
-                      checked={inputProps.error}
-                      onChange={(e) =>
-                        setInputProps((p) => ({ ...p, error: e.target.checked }))
-                      }
-                    />
-                  </div>
-                </ControlField>
-              </>
-            )}
-
-            {activeTab === 'alert' && (
-              <>
-                <ControlField label="variant">
-                  <select
-                    value={alertProps.variant}
-                    onChange={(e) =>
-                      setAlertProps((p) => ({
-                        ...p,
-                        variant: e.target.value as AlertState['variant'],
-                      }))
-                    }
-                    style={controlBase}
-                  >
-                    <option value="info">info</option>
-                    <option value="warning">warning</option>
-                    <option value="error">error</option>
-                  </select>
-                </ControlField>
-                <ControlField label="title">
-                  <input
-                    value={alertProps.title}
-                    onChange={(e) =>
-                      setAlertProps((p) => ({ ...p, title: e.target.value }))
-                    }
-                    style={controlBase}
-                  />
-                </ControlField>
-                <ControlField label="body">
-                  <input
-                    value={alertProps.body}
-                    onChange={(e) =>
-                      setAlertProps((p) => ({ ...p, body: e.target.value }))
-                    }
-                    style={controlBase}
-                  />
-                </ControlField>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Code block */}
-        <div
-          style={{
-            position: 'relative',
-            marginTop: '16px',
-            border: '0.5px solid var(--color-border)',
-          }}
-        >
-          <pre
+        {/* ─── Component cards ──────────────────────────────────────────── */}
+        <section style={{ paddingTop: '96px' }}>
+          <h2
             style={{
-              margin: 0,
-              padding: '16px 48px 16px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
+              fontSize: '28px',
+              fontWeight: 540,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
               color: 'var(--color-text)',
-              backgroundColor: 'var(--color-bg)',
-              overflowX: 'auto',
-              lineHeight: 1.6,
+              margin: '0 0 32px',
             }}
           >
-            <code>{currentCode}</code>
-          </pre>
-          <button
-            onClick={handleCopy}
+            A handful of the twenty.
+          </h2>
+          <div
+            className="lumen-cards-grid"
             style={{
-              position: 'absolute',
-              top: '10px',
-              right: '12px',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              fontWeight: 420,
-              letterSpacing: '0.05em',
-              color: copied ? 'var(--color-text)' : 'var(--color-text-faint)',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '16px',
             }}
           >
-            {copied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
-      </section>
-
-      {/* ─── Editorial ────────────────────────────────────────────────── */}
-      <section style={{ paddingTop: '60px', textAlign: 'center' }}>
-        <p
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontStyle: 'italic',
-            fontSize: '16px',
-            fontWeight: 400,
-            color: 'var(--color-text)',
-            lineHeight: 1.6,
-            margin: 0,
-          }}
-        >
-          Lumen is twenty components, designed in Figma, shipped as code.
-        </p>
-      </section>
-
-      {/* ─── Exits ────────────────────────────────────────────────────── */}
-      <section style={{ paddingTop: '80px' }}>
-        <p style={{ ...eyebrow, marginBottom: '16px' }}>Elsewhere</p>
-        {exits.map((exit, i) => (
-          <div key={exit.label}>
-            {i > 0 && <hr style={hairline} />}
+            {componentCards.map((c) => (
+              <ComponentCard
+                key={c.slug}
+                slug={c.slug}
+                name={c.name}
+                category={c.category}
+                description={c.description}
+                preview={c.preview}
+              />
+            ))}
+          </div>
+          <div style={{ marginTop: '32px' }}>
             <a
-              href={exit.href}
+              href="/components"
+              onMouseEnter={() => setLinkHovered(true)}
+              onMouseLeave={() => setLinkHovered(false)}
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                padding: '14px 0',
-                textDecoration: 'none',
-                color: 'inherit',
+                fontSize: '14px',
+                fontWeight: 540,
+                color: 'var(--color-text)',
+                textDecoration: linkHovered ? 'underline' : 'none',
+                textUnderlineOffset: '3px',
+                textDecorationThickness: '0.5px',
               }}
             >
-              <span
+              Explore all twenty components →
+            </a>
+          </div>
+        </section>
+
+        {/* ─── A note from Yuti ─────────────────────────────────────────── */}
+        <section style={{ paddingTop: '96px' }}>
+          <hr style={hairline} />
+          <div style={{ paddingTop: '60px', maxWidth: '620px' }}>
+            <p style={{ ...eyebrow, marginBottom: '20px' }}>A note from Yuti</p>
+            <h2
+              style={{
+                fontSize: '24px',
+                fontWeight: 540,
+                letterSpacing: '-0.015em',
+                lineHeight: 1.2,
+                color: 'var(--color-text)',
+                margin: '0 0 20px',
+              }}
+            >
+              I built this because I needed it.
+            </h2>
+            <p style={prose}>
+              I trained as a product designer, which is to say I learned how to
+              make things look right and reason about them.
+            </p>
+            <p style={prose}>
+              What I didn&apos;t learn — what I picked up later, slowly, from
+              open-source codebases on the internet — was how to actually ship
+              the things I was designing. Every system I learned from was free,
+              generous, and built by people who didn&apos;t have to share it.
+            </p>
+            <p style={prose}>
+              Lumen is my small contribution back. Twenty components, an
+              opinionated foundation, a clear convention between Figma and code.
+              Built for designers who, like me, are ready to wear more than one
+              hat — and need the tools that fit.
+            </p>
+            <p style={{ ...prose, margin: 0 }}>
+              It&apos;s free. It will stay free. If it helps you, the only thing
+              I ask is that you share it.
+            </p>
+            <div style={{ marginTop: '24px' }}>
+              <p
                 style={{
-                  fontSize: '14px',
-                  fontWeight: 540,
+                  margin: 0,
+                  fontSize: '13px',
+                  fontWeight: 420,
                   color: 'var(--color-text)',
                 }}
               >
-                {exit.label}
-              </span>
-              <span
+                — Yuti Vora
+              </p>
+              <p
                 style={{
-                  fontSize: '14px',
-                  fontWeight: 420,
-                  color: 'var(--color-text-muted)',
+                  margin: '2px 0 0',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  color: 'var(--color-text-faint)',
                 }}
               >
-                {exit.desc}
-              </span>
-            </a>
+                Product designer
+              </p>
+            </div>
           </div>
-        ))}
-      </section>
+        </section>
 
-      {/* ─── Footer ───────────────────────────────────────────────────── */}
-      <footer style={{ paddingTop: '60px', paddingBottom: '48px' }}>
-        <hr style={hairline} />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingTop: '16px',
-          }}
-        >
-          <span
+        {/* ─── Footer ───────────────────────────────────────────────────── */}
+        <footer style={{ paddingTop: '60px', paddingBottom: '48px' }}>
+          <hr style={hairline} />
+          <div
             style={{
-              fontSize: '13px',
-              fontWeight: 420,
-              color: 'var(--color-text-muted)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: '16px',
             }}
           >
-            © 2026 Yuti Vora
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            open source
-          </span>
-        </div>
-      </footer>
-    </div>
+            <span
+              style={{
+                fontSize: '13px',
+                fontWeight: 420,
+                color: 'var(--color-text-muted)',
+              }}
+            >
+              © 2026 Yuti Vora
+            </span>
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '13px',
+                color: 'var(--color-text-muted)',
+              }}
+            >
+              open source
+            </span>
+          </div>
+        </footer>
+
+      </div>
+    </>
   );
 }
